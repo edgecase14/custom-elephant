@@ -44,7 +44,20 @@ export class mrSock {
   		const cb = function(event) {
 			console.log(event.data);
 			const jsondata = JSON.parse(event.data);
-			    //console.log(mrSock.handlers.toString());
+			if (Array.isArray(jsondata)) {
+				for (let amsg of jsondata) {
+					this.dispatchOne(amsg);
+				}
+			} else {
+				this.dispatchOne(jsondata);
+			}
+
+  		}
+  		this.sock.onmessage = cb.bind(this);
+ 	} // constructor
+ 	
+ 	dispatchOne(jsondata) {
+				//console.log(mrSock.handlers.toString());
 			    let one_matched = false;
 				for (let handler of this.dispatch) {
 					//console.log("trying handler id: " + handler.ep + " json.id" + jsondata.payload.id);
@@ -57,9 +70,7 @@ export class mrSock {
 				if (one_matched == false) {
 					console.log("unregeistered tsc event type " + jsondata.toString());
 				}
-  		}
-  		this.sock.onmessage = cb.bind(this);
- 	} // constructor
+    }
  	
   	send(jsn) { // better ensapsulation if we do: send(type, payload)
 		this.sock.send(JSON.stringify(jsn));
