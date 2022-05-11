@@ -25,7 +25,7 @@ import javax.ejb.EJB;
 /**
  * Servlet implementation class Tsc
  */
-@ServerEndpoint(value = "/Tsc",
+@ServerEndpoint(value = "/Tsc/{userid}",
     encoders= { MessageEncoder.class },
     decoders= { MessageDecoder.class }
 )
@@ -119,8 +119,8 @@ public class Tsc  {
 
     
     @OnOpen
-    public void helloOnOpen(Session session) {
-    	//session.getUserProperties().put("USER_ID", id);
+    public void helloOnOpen(@PathParam("userid") String id, Session session) {
+    	session.getUserProperties().put("USER_ID", id);
     	session.getUserProperties().put("IS_BUFFERED", 0);
         System.out.println("WebSocket opened: " + session.getId() + " userid: " + id);
     }
