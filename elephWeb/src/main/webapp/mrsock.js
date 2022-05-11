@@ -7,9 +7,10 @@ export class mrSock {
 	sock;
 	dispatch;
 	statusElement;
+	onOpenMsg;
 	static urls=[]; // connection cache
 	
-  	constructor (url) {
+  	constructor (url,openmsg) {
 		this.url = url; // could we just get this from WebSocket?
 		this.dispatch = [];
 		// implement singleton per url
@@ -18,6 +19,7 @@ export class mrSock {
 				return old_url.myself;
 			}
 		}
+		this.onOpenMsg = openmsg;
 		this.sock = new WebSocket(url);
 		//console.log(url);
 		mrSock.urls.push({ my_url: url, myself: this });
@@ -32,7 +34,7 @@ export class mrSock {
 
   		const ono = function(event) {
 			this.statusElement.innerText = this.url + " open";
-			this.send({type: "cell-list", payload: { dummy: "is dumb"} }); // hack until main.js onopen cb in place
+			this.send(this.onOpenMsg);
   		}
 		this.sock.onopen = ono.bind(this);
 

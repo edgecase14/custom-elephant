@@ -64,8 +64,8 @@ public class Tsc  {
         			.add("type", "cell-list")
         			.add("payload", builder);
         	push(session, plo);
-        	// now send corresponding cellUpdate - moves MVC controller out of browser
-        	// must remove send(cell-update) from tsc.js also
+        	// TODO: subscribe to changes of cell, ensuring no race between subscribe
+        	// and sending of initial value
             JsonObjectBuilder builder2 = Json.createObjectBuilder()
             		.add("id", acell.getId())
                     .add("action", "init")

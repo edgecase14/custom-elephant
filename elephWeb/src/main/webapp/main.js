@@ -3,10 +3,7 @@ import { mrSock } from './mrsock.js'
 
 const row = document.getElementById("row1");
 
-const cellsock = new mrSock("ws://" + location.host + "/elephWeb/Tsc/jjackson");
-
-// onopen callback
-//cellsock.send({ type:"cell-list" });
+const cellsock = new mrSock("ws://" + location.host + "/elephWeb/Tsc/jjackson", {type: "cell-list", payload: { dummy: "is pharoah"} });
 
 // onmessage callback
 function gotcells(payload) {
