@@ -9,8 +9,10 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
+import javax.websocket.server.PathParam;
 import java.util.List;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 //import javax.json.JsonArray;
 import javax.json.Json;
@@ -33,7 +35,8 @@ public class Tsc  {
 	
     @OnMessage
     public void dispatch(Message message, Session session) throws IOException, EncodeException {
-        //System.out.println("Say hello to '" + name + "'");
+    	//String id = (String) session.getUserProperties().get("USER_ID");
+        //System.out.println("Say hello to '" + id + "'");
     	switch (message.getType()) {
     	case "cell-list":
     		this.cellList(session);
@@ -48,23 +51,25 @@ public class Tsc  {
     }
 
     private void cellList(Session session) throws IOException, EncodeException {
-    	Message response = new Message();
-    	response.setType("cell-list");
+    	setBuffered(session);
     	    	
         List<TsCell> mylist = tscell.getAllTsCells();
-        StringBuffer sb = new StringBuffer();
-        for (TsCell acell : mylist ) {
-            JsonObjectBuilder builder = Json.createObjectBuilder();
 
-        	sb.append(acell.getId() + " ");
+        for (TsCell acell : mylist ) {
+                JsonObjectBuilder builder = Json.createObjectBuilder();
+
         	builder.add("cellid", acell.getId());
-        	JsonObject cellJson = builder.build();
  
-        	response.setPayload(cellJson);
-        
-        	session.getBasicRemote().sendObject(response);
+        	JsonObjectBuilder plo = Json.createObjectBuilder()
+        			.add("type", "cell-list")
+        			.add("payload", builder);
+
+        	push(session, plo);
+        	// now send corresponding cellUpdate - moves MVC controller out of browser
+        	// must remove send(cell-update) from tsc.js also
         }
-    	System.out.println("cell list:" + sb.toString());
+        sendToSession(session);
+
     }
     
     private void cellUpdate(Session session, JsonObject obj) throws IOException, EncodeException {
@@ -90,10 +95,34 @@ public class Tsc  {
     	
     	session.getBasicRemote().sendObject(response);
     }
+
+    private void sendToSession(Session session) throws EncodeException, IOException {
+	  int isBuffered = (int) session.getUserProperties().get("IS_BUFFERED");
+          if (isBuffered == 0) {
+        	  System.out.println("must be buffered!");
+              //session.getBasicRemote().sendObject(response);
+          } else {
+        	  JsonArrayBuilder buf = (JsonArrayBuilder) session.getUserProperties().get("JSON_OBJ");
+              session.getBasicRemote().sendText(buf.build().toString());
+          }
+    }
+
+    private void setBuffered(Session session) {
+    	session.getUserProperties().put("IS_BUFFERED", 1);
+        session.getUserProperties().put("JSON_OBJ" , Json.createArrayBuilder());
+    }
+
+    private void push(Session session, JsonObjectBuilder jso) {
+       JsonArrayBuilder buf = (JsonArrayBuilder) session.getUserProperties().get("JSON_OBJ");
+	   buf.add(jso);
+    }
+
     
     @OnOpen
     public void helloOnOpen(Session session) {
-        System.out.println("WebSocket opened: " + session.getId());
+    	//session.getUserProperties().put("USER_ID", id);
+    	session.getUserProperties().put("IS_BUFFERED", 0);
+        System.out.println("WebSocket opened: " + session.getId() + " userid: " + id);
     }
 
     @OnClose
