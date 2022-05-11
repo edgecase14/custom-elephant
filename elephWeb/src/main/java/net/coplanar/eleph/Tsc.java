@@ -77,7 +77,16 @@ public class Tsc  {
          	push(session, plo2);
 
         }
-        sendToSession(session);
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+
+    	builder.add("user", (String) session.getUserProperties().get("USER_ID"));
+
+    	JsonObjectBuilder plo = Json.createObjectBuilder()
+    			.add("type", "username")
+    			.add("payload", builder);
+    	push(session, plo);
+
+    	sendToSession(session);
 
     }
     

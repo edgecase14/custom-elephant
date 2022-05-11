@@ -3,7 +3,12 @@ import { mrSock } from './mrsock.js'
 
 const row = document.getElementById("row1");
 
-const cellsock = new mrSock("ws://" + location.host + "/elephWeb/Tsc/jjackson", {type: "cell-list", payload: { dummy: "is pharoah"} });
+let queryString = window.location.search;
+let params = new URLSearchParams(queryString);
+window.login = params.get("login");
+
+
+const cellsock = new mrSock("ws://" + location.host + "/elephWeb/Tsc/" + login, {type: "cell-list", payload: { dummy: "is pharoah"} });
 
 // onmessage callback
 function gotcells(payload) {
@@ -15,4 +20,13 @@ function gotcells(payload) {
 	row.appendChild(cellElem);
 }
 
+function showusername(payload) {
+	
+  //console.log(payload);
+
+	const un = document.getElementById("username");
+	un.innerText = payload.user;
+}
+
 cellsock.registerCallback("cell-list", gotcells);
+cellsock.registerCallback("username", showusername);
