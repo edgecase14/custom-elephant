@@ -59,17 +59,26 @@ public class Tsc  {
         List<TsCell> mylist = tscell.getAllTsCells();
 
         for (TsCell acell : mylist ) {
-                JsonObjectBuilder builder = Json.createObjectBuilder();
+            JsonObjectBuilder builder = Json.createObjectBuilder();
 
         	builder.add("cellid", acell.getId());
  
         	JsonObjectBuilder plo = Json.createObjectBuilder()
         			.add("type", "cell-list")
         			.add("payload", builder);
-
         	push(session, plo);
         	// now send corresponding cellUpdate - moves MVC controller out of browser
         	// must remove send(cell-update) from tsc.js also
+            JsonObjectBuilder builder2 = Json.createObjectBuilder()
+            		.add("id", acell.getId())
+                    .add("action", "init")
+            		.add("contents", acell.getEntry());
+  
+         	JsonObjectBuilder plo2 = Json.createObjectBuilder()
+         			.add("type", "cell-update")
+         			.add("payload", builder2);
+         	push(session, plo2);
+
         }
         sendToSession(session);
 
