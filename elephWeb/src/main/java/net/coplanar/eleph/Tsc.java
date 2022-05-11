@@ -41,6 +41,9 @@ public class Tsc  {
     	case "cell-list":
     		this.cellList(session);
     		break;
+    	case "cell-init":
+    		this.cellInit(session, message.getPayload());
+    		break;
     	case "cell-update":
     		this.cellUpdate(session, message.getPayload());
     		break;
@@ -72,6 +75,24 @@ public class Tsc  {
 
     }
     
+    private void cellInit(Session session, JsonObject obj) throws IOException, EncodeException {
+    	Message response = new Message();
+    	response.setType("cell-update");
+
+    	int id = obj.getInt("id");
+    	
+    	TsCell mytscell = tscell.getTsCell(id);
+    	
+    	JsonObjectBuilder builder = Json.createObjectBuilder();
+    	builder.add("id", mytscell.getId());
+    	builder.add("action", "init");
+   		builder.add("contents", mytscell.getEntry());
+    	JsonObject cellJson = builder.build();
+    	response.setPayload(cellJson);
+    	
+    	session.getBasicRemote().sendObject(response);
+    }
+
     private void cellUpdate(Session session, JsonObject obj) throws IOException, EncodeException {
     	Message response = new Message();
     	response.setType("cell-update");
@@ -82,15 +103,11 @@ public class Tsc  {
     	
     	JsonObjectBuilder builder = Json.createObjectBuilder();
     	builder.add("id", mytscell.getId());
-    	if ( obj.containsKey("contents") ) {
-    		builder.add("ack", true);
+    		builder.add("action", "ack");
     		tscell.updateTsCellEntry(id, Float.parseFloat(obj.getString("contents")));
     		System.out.println("contents: " + Float.parseFloat(obj.getString("contents")));
     		tscell.flush();
-    	} else {
-    		builder.add("contents", mytscell.getEntry());
-    	}
-    	JsonObject cellJson = builder.build();
+    	   	JsonObject cellJson = builder.build();
     	response.setPayload(cellJson);
     	
     	session.getBasicRemote().sendObject(response);

@@ -62,11 +62,11 @@ export class TimeSheetCell extends HTMLElement {
 
     ack(payload) { // payload not used - maybe "cell-init" will use?
       console.log("cell-update:: " + JSON.stringify(payload));
-      if (payload.ack == true) { 
+      if (payload.action == "ack") { 
        this.shadowRoot.querySelector("div").className = "rolling-meadows";
         const myid = this.getAttribute("timesheet-id");
       }
-      if (payload.contents) {
+      if (payload.action == "init") {
 		this.shadowRoot.querySelector("div").innerText = payload.contents;
 	  }
     }
@@ -89,7 +89,7 @@ export class TimeSheetCell extends HTMLElement {
 	    TimeSheetCell.handlers.push({ep: myid, cb: this.ack.bind(this)});
 		this.sock.registerCallback("cell-update", this.mymessage.bind(this)); // duplicates every one XXX
 		// get saved value from backend database
-		this.sock.send({ type:"cell-update", payload: {id: myid}});
+		this.sock.send({ type:"cell-init", payload: {id: myid}});
       } else {
 		console.log("error: ts-cell: attribute timesheet-id is required when element is attached to DOM");
 	  }
