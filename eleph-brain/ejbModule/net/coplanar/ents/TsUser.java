@@ -10,7 +10,7 @@ import javax.persistence.*;
  */
 @Entity
 
-public class Users implements Serializable {
+public class TsUser implements Serializable {
 
 	   
 	@Id
@@ -19,7 +19,7 @@ public class Users implements Serializable {
 	private String username;
 	private static final long serialVersionUID = 1L;
 
-	public Users() {
+	public TsUser() {
 		super();
 	}   
 	public int getUser_id() {

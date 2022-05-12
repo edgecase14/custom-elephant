@@ -10,7 +10,7 @@ import javax.persistence.*;
  */
 @Entity
 
-public class Projects implements Serializable {
+public class Project implements Serializable {
 
 	   
 	@Id
@@ -19,7 +19,7 @@ public class Projects implements Serializable {
 	private String pname;
 	private static final long serialVersionUID = 1L;
 
-	public Projects() {
+	public Project() {
 		super();
 	}   
 	public int getProj_id() {

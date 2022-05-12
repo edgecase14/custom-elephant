@@ -3,8 +3,8 @@
 	<persistence-unit name="eleph-brain">
 		<jta-data-source>java:/ElephDS</jta-data-source>
 		<class>net.coplanar.ents.TsCell</class>
-		<class>net.coplanar.ents.Projects</class>
-		<class>net.coplanar.ents.Users</class>
+		<class>net.coplanar.ents.Project</class>
+		<class>net.coplanar.ents.TsUser</class>
 		<properties>
 			<property name="javax.persistence.schema-generation.create-database-schemas" value="false"/> 
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL95Dialect"/>

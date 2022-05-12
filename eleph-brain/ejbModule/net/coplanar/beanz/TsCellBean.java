@@ -9,7 +9,7 @@ import javax.persistence.TypedQuery;
 import net.coplanar.ents.TsCell;
 
 @Stateful
-public class TsCellz {
+public class TsCellBean {
     // Injected database connection:
     @PersistenceContext private EntityManager em;
  

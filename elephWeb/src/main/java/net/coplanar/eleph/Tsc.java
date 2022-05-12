@@ -17,7 +17,7 @@ import javax.json.JsonObject;
 //import javax.json.JsonArray;
 import javax.json.Json;
 
-import net.coplanar.beanz.TsCellz;
+import net.coplanar.beanz.TsCellBean;
 import net.coplanar.ents.TsCell;
 
 import javax.ejb.EJB;
@@ -31,7 +31,7 @@ import javax.ejb.EJB;
 )
 public class Tsc  {
        
-	@EJB(lookup="java:app/eleph-brain/TsCellz!net.coplanar.beanz.TsCellz") TsCellz tscell;
+	@EJB(lookup="java:app/eleph-brain/TsCellBean!net.coplanar.beanz.TsCellBean") TsCellBean tscell;
 	
     @OnMessage
     public void dispatch(Message message, Session session) throws IOException, EncodeException {
