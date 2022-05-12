@@ -44,7 +44,7 @@ export class mrSock {
   		this.sock.onclose = onc.bind(this);
   		
   		const cb = function(event) {
-			console.log(event.data);
+			//console.log(event.data);
 			const jsondata = JSON.parse(event.data);
 			if (Array.isArray(jsondata)) {
 				for (let amsg of jsondata) {
