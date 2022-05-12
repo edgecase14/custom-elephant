@@ -19,6 +19,10 @@ import javax.json.Json;
 
 import net.coplanar.beanz.TsCellBean;
 import net.coplanar.ents.TsCell;
+import net.coplanar.beanz.TsUserBean;
+import net.coplanar.ents.TsUser;
+import net.coplanar.beanz.ProjectBean;
+import net.coplanar.ents.Project;
 
 import javax.ejb.EJB;
 
@@ -32,6 +36,8 @@ import javax.ejb.EJB;
 public class Tsc  {
        
 	@EJB(lookup="java:app/eleph-brain/TsCellBean!net.coplanar.beanz.TsCellBean") TsCellBean tscell;
+	@EJB(lookup="java:app/eleph-brain/TsUserBean!net.coplanar.beanz.TsUserBean") TsUserBean tsuser;
+	@EJB(lookup="java:app/eleph-brain/ProjectBean!net.coplanar.beanz.ProjectBean") ProjectBean project;
 	
     @OnMessage
     public void dispatch(Message message, Session session) throws IOException, EncodeException {
@@ -53,7 +59,11 @@ public class Tsc  {
     private void cellList(Session session) throws IOException, EncodeException {
     	setBuffered(session);
     	    	
-        List<TsCell> mylist = tscell.getAllTsCells();
+    	String id = (String) session.getUserProperties().get("USER_ID");
+//    	TsUser tsu = tsuser.getUserFromUsername(id);
+    	TsUser tsu = tsuser.getUser(1);
+    	Project prj = project.getProject(1);
+        List<TsCell> mylist = tscell.getAllTsCells(tsu, prj);
 
         for (TsCell acell : mylist ) {
             JsonObjectBuilder builder = Json.createObjectBuilder();

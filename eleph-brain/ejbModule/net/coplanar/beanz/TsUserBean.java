@@ -24,5 +24,9 @@ public class TsUserBean {
     	TsUser user = em.find(TsUser.class, user_id);
     	return user;
     }
+    public TsUser getUserFromUsername(String username) {
+    	TsUser user = em.find(TsUser.class, username);
+    	return user;
+    }
 
 }

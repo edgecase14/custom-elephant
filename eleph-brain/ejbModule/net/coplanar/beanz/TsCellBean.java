@@ -7,6 +7,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import net.coplanar.ents.TsCell;
+import net.coplanar.ents.TsUser;
+import net.coplanar.ents.Project;
 
 @Stateful
 public class TsCellBean {
@@ -21,10 +23,13 @@ public class TsCellBean {
     	em.flush();
     }
 
-    // Retrieves all the guests:
-    public List<TsCell> getAllTsCells() {
+    public List<TsCell> getAllTsCells(TsUser tsuser, Project proj) {
+    	int user_id = tsuser.getUser_id();
+    	int proj_id = proj.getProj_id();
         TypedQuery<TsCell> query = em.createQuery(
-            "SELECT tsc FROM TsCell tsc ORDER BY tsc.id", TsCell.class);
+            "SELECT tsc FROM TsCell tsc WHERE user_id = :user_id AND proj_id = :proj_id ORDER BY tsc.id", TsCell.class)
+        		.setParameter("user_id", user_id)
+        		.setParameter("proj_id", proj_id);
         return query.getResultList();
     }
     public TsCell getTsCell(int id ) {

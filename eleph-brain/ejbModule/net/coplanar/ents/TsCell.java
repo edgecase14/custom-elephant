@@ -13,7 +13,21 @@ public class TsCell implements Serializable {
 
 	   
 	@Id
+	@GeneratedValue ( strategy = GenerationType.IDENTITY )
 	private int id;
+	
+	@ManyToOne
+	@JoinColumn( name="user_id",
+			foreignKey = @ForeignKey(name="USER_ID_FK")
+	)
+	private TsUser tsuser;
+	
+	@ManyToOne
+	@JoinColumn( name="proj_id",
+			foreignKey = @ForeignKey(name="PROJ_ID_FK")
+	)
+	private Project project;
+	
 	private float entry;
 	private static final long serialVersionUID = 1L;
 
