@@ -23,6 +23,8 @@ import net.coplanar.beanz.TsUserBean;
 import net.coplanar.ents.TsUser;
 import net.coplanar.beanz.ProjectBean;
 import net.coplanar.ents.Project;
+import net.coplanar.beanz.UserProjectBean;
+import net.coplanar.ents.UserProject;
 
 import javax.ejb.EJB;
 
@@ -38,6 +40,7 @@ public class Tsc  {
 	@EJB(lookup="java:app/eleph-brain/TsCellBean!net.coplanar.beanz.TsCellBean") TsCellBean tscell;
 	@EJB(lookup="java:app/eleph-brain/TsUserBean!net.coplanar.beanz.TsUserBean") TsUserBean tsuser;
 	@EJB(lookup="java:app/eleph-brain/ProjectBean!net.coplanar.beanz.ProjectBean") ProjectBean project;
+	@EJB(lookup="java:app/eleph-brain/UserProjectBean!net.coplanar.beanz.UserProjectBean") UserProjectBean userProject;
 	
     @OnMessage
     public void dispatch(Message message, Session session) throws IOException, EncodeException {
@@ -62,12 +65,25 @@ public class Tsc  {
     	String id = (String) session.getUserProperties().get("USER_ID");
 //    	TsUser tsu = tsuser.getUserFromUsername(id);
     	TsUser tsu = tsuser.getUser(1);
-    	Project prj = project.getProject(1);
-        List<TsCell> mylist = tscell.getAllTsCells(tsu, prj);
+    	List<UserProject> prjs = tsu.getProjects();
+    	for (UserProject userProj : prjs) {
+    	  Project prj = userProj.getProject();
+          JsonObjectBuilder pbuilder = Json.createObjectBuilder();
 
-        for (TsCell acell : mylist ) {
+           pbuilder.add("projid", prj.getProj_id());
+           pbuilder.add("pname", prj.getPname());
+ 
+          JsonObjectBuilder pplo = Json.createObjectBuilder()
+        			.add("type", "row-list")
+        			.add("payload", pbuilder);
+       	  push(session, pplo);
+    		
+          List<TsCell> mylist = tscell.getAllTsCells(tsu, prj);
+
+          for (TsCell acell : mylist ) {
             JsonObjectBuilder builder = Json.createObjectBuilder();
 
+        	builder.add("projid", acell.getProject().getProj_id());
         	builder.add("cellid", acell.getId());
  
         	JsonObjectBuilder plo = Json.createObjectBuilder()
@@ -86,7 +102,8 @@ public class Tsc  {
          			.add("payload", builder2);
          	push(session, plo2);
 
-        }
+          }
+    	}
         JsonObjectBuilder builder = Json.createObjectBuilder();
 
     	builder.add("user", (String) session.getUserProperties().get("USER_ID"));

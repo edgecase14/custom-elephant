@@ -2,6 +2,7 @@ package net.coplanar.ents;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import java.time.LocalDate;
 
 /**
  * Entity implementation class for Entity: TsCell
@@ -28,7 +29,10 @@ public class TsCell implements Serializable {
 	)
 	private Project project;
 	
+	@Column(nullable=false)
+	private LocalDate te_date;
 	private float entry;
+	private String te_note;
 	private static final long serialVersionUID = 1L;
 
 	public TsCell() {
@@ -48,5 +52,25 @@ public class TsCell implements Serializable {
 	public void setEntry(float entry) {
 		this.entry = entry;
 	}
+	public Project getProject() {
+		return this.project;
+	}
+	public TsUser getTsUser() {
+		return this.tsuser;
+	}
+	public LocalDate getDate() {
+		return this.te_date;
+	}
+	public void setDate(LocalDate dt) {
+		this.te_date = dt;
+	}
+	public String getNote() {
+		return this.te_note;
+	}
+	public void setNote(String note) {
+		this.te_note = note;
+	}
+
+
    
 }

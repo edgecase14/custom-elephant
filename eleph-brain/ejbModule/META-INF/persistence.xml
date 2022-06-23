@@ -5,6 +5,8 @@
 		<class>net.coplanar.ents.TsCell</class>
 		<class>net.coplanar.ents.Project</class>
 		<class>net.coplanar.ents.TsUser</class>
+		<class>net.coplanar.ents.UserProject</class>
+		<class>net.coplanar.ents.Rep</class>
 		<properties>
 			<property name="javax.persistence.schema-generation.create-database-schemas" value="false"/> 
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL95Dialect"/>

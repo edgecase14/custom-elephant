@@ -4,7 +4,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import net.coplanar.ents.TsUser;
+import net.coplanar.ents.*;
 
 /**
  * Session Bean implementation class UserBean
@@ -28,5 +28,4 @@ public class TsUserBean {
     	TsUser user = em.find(TsUser.class, username);
     	return user;
     }
-
 }
