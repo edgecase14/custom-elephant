@@ -9,14 +9,32 @@
 
   <body>
 
-	<h1><br>Logged in user:</br><div id="username">empty</div></h1>
+	<h1>MrTimesheet</h1>
+	Logged in user:<div id="username">empty</div>
 
-	<table id="mrtimesheet">
-	  <thead><tr><th>MrTimesheet</th><th>day1</th><th>day2</th></tr></thead>
-	  <tbody>bg</tbody>
+	<table rules='all' style='border: 1px solid #900' id="mrtimesheet">
+	  <!-- need to dynamically create, based on # days in pay period chosen -->
+	  <thead><tr id="days"><th>Project #</th><th>Job Name</th></tr></thead>
+	  <tbody></tbody>
+	  <tfoot>
+	    <tr id="add"><th colspan=18>Add Project</th></tr>
+	    <tr id="day_totals"><th colspan=2>Day Total</th></tr>
+	  </tfoot>
 	</table>
 
-	<br>WebSocket status:</br> <!--  websocket status area -->
+	<table rules='all' style='border: 1px solid #900' id="calcs">
+		<thead><tr><th>Totals</th></tr></thead>
+		<tbody>
+			<tr><td>Non-Billable</td><td>TBD</td>
+			<tr><td>Billable</td><td>TBD</td>
+			<tr><td>Percent Billable</td><td>TBD</td>
+			<tr><td>Grand Total (not incl banked)</td><td>TBD</td>
+			<tr><td>REDEEM BANKED</td><td contenteditable='true'></td>
+			<tr><td>Grand Total (incl banked)</td><td>TBD</td>
+		</tbody>
+	</table>
+
+	<br>WebSocket status: <!--  websocket status area -->
 	<div id="tsc"></div>
 	
   </body>

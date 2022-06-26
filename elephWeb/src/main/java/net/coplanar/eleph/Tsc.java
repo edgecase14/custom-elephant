@@ -71,6 +71,7 @@ public class Tsc  {
           JsonObjectBuilder pbuilder = Json.createObjectBuilder();
 
            pbuilder.add("projid", prj.getProj_id());
+           pbuilder.add("job_id", prj.getJobId());
            pbuilder.add("pname", prj.getPname());
  
           JsonObjectBuilder pplo = Json.createObjectBuilder()
@@ -83,7 +84,8 @@ public class Tsc  {
           for (TsCell acell : mylist ) {
             JsonObjectBuilder builder = Json.createObjectBuilder();
 
-        	builder.add("projid", acell.getProject().getProj_id());
+        	builder.add("projid", acell.getProject().getProj_id())
+			.add("date", acell.getDate().toString());
         	builder.add("cellid", acell.getId());
  
         	JsonObjectBuilder plo = Json.createObjectBuilder()
@@ -95,7 +97,9 @@ public class Tsc  {
             JsonObjectBuilder builder2 = Json.createObjectBuilder()
             		.add("id", acell.getId())
                     .add("action", "init")
-            		.add("contents", acell.getEntry());
+            		.add("date", acell.getDate().toString())
+            		.add("contents", acell.getEntry())
+            		.add("note",  acell.getNote());
   
          	JsonObjectBuilder plo2 = Json.createObjectBuilder()
          			.add("type", "cell-update")
@@ -128,7 +132,7 @@ public class Tsc  {
     	JsonObjectBuilder builder = Json.createObjectBuilder();
     	builder.add("id", mytscell.getId());
     		builder.add("action", "ack");
-    		tscell.updateTsCellEntry(id, Float.parseFloat(obj.getString("contents")));
+    		tscell.updateTsCellEntry(id, Float.parseFloat(obj.getString("contents")), obj.getString("note"));
     		System.out.println("contents: " + Float.parseFloat(obj.getString("contents")));
     		tscell.flush();
     	   	JsonObject cellJson = builder.build();

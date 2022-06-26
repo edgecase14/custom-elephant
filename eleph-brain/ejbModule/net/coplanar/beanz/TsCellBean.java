@@ -36,10 +36,11 @@ public class TsCellBean {
     	TsCell thecell = em.find(TsCell.class, id);
     	return thecell;
     }
-    public void updateTsCellEntry (int id, float entry) {
+    public void updateTsCellEntry (int id, float entry, String note) {
     	//em.getTransaction().begin();  // can't while using container managed transations
     	TsCell mytscell = getTsCell(id);
     	mytscell.setEntry(entry);
+    	mytscell.setNote(note);
     	//em.getTransaction().begin();
     	
     }

@@ -22,6 +22,7 @@ export class TimeSheetCell extends HTMLElement {
 
 	// Create (nested) span elements
 	const wrapper = document.createElement('div');
+	//wrapper.setAttribute('id', 'entry_el');
 	wrapper.setAttribute('contenteditable','true');
 	wrapper.innerText = "0";
 
@@ -31,6 +32,20 @@ export class TimeSheetCell extends HTMLElement {
 
     // attach the created elements to the shadow DOM
 	this.shadowRoot.append(wrapper);
+
+	const note_el = document.createElement('div');
+	note_el.setAttribute('id', 'note_el');
+	note_el.setAttribute('contenteditable','true');
+	note_el.innerText = "notes go here!";
+	this.shadowRoot.append(note_el);
+
+	// make this conditional on customElement Attribute, "hide_date"?
+
+	//const date_el = document.createElement('div');
+	//date_el.setAttribute('id', 'date_el');
+	//date_el.innerText = "YYYY-MM-DD";
+	//this.shadowRoot.append(date_el);
+
 
 	// Apply external styles to the shadow dom
 	const linkElem = document.createElement('link');
@@ -51,8 +66,9 @@ export class TimeSheetCell extends HTMLElement {
 	  
 	      let cell_id = Number(this.getAttribute("timesheet-id"));
 	      let contents = this.shadowRoot.querySelector("div").innerText;
+	      let note_str = this.shadowRoot.querySelector("div[id='note_el']").innerText;
 	      // console.log(contents);
-	      this.sock.send({ type:"cell-update", payload: {id: cell_id, contents: contents }});
+	      this.sock.send({ type:"cell-update", payload: {id: cell_id, contents: contents, note: note_str }});
 
 	  	  return false;
        }
@@ -61,13 +77,16 @@ export class TimeSheetCell extends HTMLElement {
   } // constructor !!
 
     ack(payload) { // payload not used - maybe "cell-init" will use?
-      console.log("cell-update:: " + JSON.stringify(payload));
+      //console.log("cell-update:: " + JSON.stringify(payload));
       if (payload.action == "ack") { 
        this.shadowRoot.querySelector("div").className = "rolling-meadows";
         const myid = this.getAttribute("timesheet-id");
       }
       if (payload.action == "init") {
 		this.shadowRoot.querySelector("div").innerText = payload.contents;
+		this.shadowRoot.querySelector("div[id='note_el']").innerText = payload.note;
+		// make this conditional on customElement Attribute, "hide_date"?
+		//this.shadowRoot.querySelector("div[id='date_el']").innerText = payload.date;
 	  }
     }
     
