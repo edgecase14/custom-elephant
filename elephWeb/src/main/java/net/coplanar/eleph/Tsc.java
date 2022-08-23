@@ -11,20 +11,15 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import javax.websocket.server.PathParam;
 import java.util.List;
+import java.time.LocalDate;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 //import javax.json.JsonArray;
 import javax.json.Json;
 
-import net.coplanar.beanz.TsCellBean;
-import net.coplanar.ents.TsCell;
-import net.coplanar.beanz.TsUserBean;
-import net.coplanar.ents.TsUser;
-import net.coplanar.beanz.ProjectBean;
-import net.coplanar.ents.Project;
-import net.coplanar.beanz.UserProjectBean;
-import net.coplanar.ents.UserProject;
+import net.coplanar.beanz.*;
+import net.coplanar.ents.*;
 
 import javax.ejb.EJB;
 
@@ -37,6 +32,7 @@ import javax.ejb.EJB;
 )
 public class Tsc  {
        
+	@EJB(lookup="java:app/eleph-brain/StatDayBean!net.coplanar.beanz.StatDayBean") StatDayBean statDay;
 	@EJB(lookup="java:app/eleph-brain/TsCellBean!net.coplanar.beanz.TsCellBean") TsCellBean tscell;
 	@EJB(lookup="java:app/eleph-brain/TsUserBean!net.coplanar.beanz.TsUserBean") TsUserBean tsuser;
 	@EJB(lookup="java:app/eleph-brain/ProjectBean!net.coplanar.beanz.ProjectBean") ProjectBean project;
@@ -61,7 +57,20 @@ public class Tsc  {
 
     private void cellList(Session session) throws IOException, EncodeException {
     	setBuffered(session);
-    	    	
+
+    	List<StatDay> sds = statDay.getStatDays(LocalDate.parse("2022-06-01"), LocalDate.parse("2022-07-30"));
+    	for (StatDay sd : sds) {
+    		JsonObjectBuilder pbuilder = Json.createObjectBuilder();
+
+    		pbuilder.add("holiday", sd.getHolidayDate().toString());
+            pbuilder.add("holiday_name", sd.getHolidayName());
+  
+           JsonObjectBuilder pplo = Json.createObjectBuilder()
+         			.add("type", "stat-days")
+         			.add("payload", pbuilder);
+           push(session, pplo);
+    	}
+    	
     	String id = (String) session.getUserProperties().get("USER_ID");
 //    	TsUser tsu = tsuser.getUserFromUsername(id);
     	TsUser tsu = tsuser.getUser(1);
@@ -100,7 +109,6 @@ public class Tsc  {
             		.add("date", acell.getDate().toString())
             		.add("contents", acell.getEntry())
             		.add("note",  acell.getNote());
-  
          	JsonObjectBuilder plo2 = Json.createObjectBuilder()
          			.add("type", "cell-update")
          			.add("payload", builder2);
@@ -108,14 +116,21 @@ public class Tsc  {
 
           }
     	}
-        JsonObjectBuilder builder = Json.createObjectBuilder();
 
+    	JsonObjectBuilder builder = Json.createObjectBuilder();
     	builder.add("user", (String) session.getUserProperties().get("USER_ID"));
-
     	JsonObjectBuilder plo = Json.createObjectBuilder()
     			.add("type", "username")
     			.add("payload", builder);
     	push(session, plo);
+
+    	Float total =  tscell.getTsCellsTotal(tsu, LocalDate.parse("2022-05-01"), LocalDate.parse("2022-06-30"));
+        JsonObjectBuilder tbuilder = Json.createObjectBuilder();
+    	tbuilder.add("total", total.toString());
+    	JsonObjectBuilder tot = Json.createObjectBuilder()
+    			.add("type", "calc-update")
+    			.add("payload", tbuilder);
+    	push(session, tot);
 
     	sendToSession(session);
 

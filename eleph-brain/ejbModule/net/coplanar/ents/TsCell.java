@@ -9,6 +9,9 @@ import java.time.LocalDate;
  *
  */
 @Entity
+@Table (
+		indexes = @Index (name = "idx_te_date", columnList = "te_date", unique = false)
+		)
 
 public class TsCell implements Serializable {
 
@@ -31,6 +34,7 @@ public class TsCell implements Serializable {
 	
 	@Column(nullable=false)
 	private LocalDate te_date;
+	@Column(nullable=false)
 	private float entry;
 	private String te_note;
 	private static final long serialVersionUID = 1L;
