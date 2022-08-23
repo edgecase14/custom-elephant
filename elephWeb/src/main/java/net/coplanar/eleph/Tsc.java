@@ -40,8 +40,6 @@ public class Tsc  {
 	
     @OnMessage
     public void dispatch(Message message, Session session) throws IOException, EncodeException {
-    	//String id = (String) session.getUserProperties().get("USER_ID");
-        //System.out.println("Say hello to '" + id + "'");
     	switch (message.getType()) {
     	case "cell-list":
     		this.cellList(session);
@@ -71,9 +69,8 @@ public class Tsc  {
            push(session, pplo);
     	}
     	
-    	String id = (String) session.getUserProperties().get("USER_ID");
-//    	TsUser tsu = tsuser.getUserFromUsername(id);
-    	TsUser tsu = tsuser.getUser(1);
+    	String id = (String) session.getUserPrincipal().getName();
+    	TsUser tsu = tsuser.getUserFromUsername(id);
     	List<UserProject> prjs = tsu.getProjects();
     	for (UserProject userProj : prjs) {
     	  Project prj = userProj.getProject();
@@ -118,7 +115,7 @@ public class Tsc  {
     	}
 
     	JsonObjectBuilder builder = Json.createObjectBuilder();
-    	builder.add("user", (String) session.getUserProperties().get("USER_ID"));
+    	builder.add("user", (String) session.getUserPrincipal().getName());
     	JsonObjectBuilder plo = Json.createObjectBuilder()
     			.add("type", "username")
     			.add("payload", builder);
@@ -180,9 +177,10 @@ public class Tsc  {
     
     @OnOpen
     public void helloOnOpen(@PathParam("userid") String id, Session session) {
+    	// later use "userid" to edit someone else's timesheet, if allowed eg supervisor
     	session.getUserProperties().put("USER_ID", id);
     	session.getUserProperties().put("IS_BUFFERED", 0);
-        System.out.println("WebSocket opened: " + session.getId() + " userid: " + id);
+        System.out.println("WebSocket opened for UPN: " + session.getUserPrincipal().getName() + " userid: " + id);
     }
 
     @OnClose

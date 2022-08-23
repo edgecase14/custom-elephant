@@ -23,7 +23,7 @@ public class TsUser implements Serializable {
 	@GeneratedValue ( strategy = GenerationType.IDENTITY )
 	private int user_id;
     @NaturalId
-    @Column(name="username", nullable=false)
+    @Column(name="username", nullable=false, unique=true)
 	private String username;
     private static final long serialVersionUID = 1L;
 	@ColumnDefault("0.04")

@@ -2,6 +2,7 @@ package net.coplanar.beanz;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import org.hibernate.Session;
 import javax.persistence.PersistenceContext;
 
 import net.coplanar.ents.*;
@@ -25,7 +26,11 @@ public class TsUserBean {
     	return user;
     }
     public TsUser getUserFromUsername(String username) {
-    	TsUser user = em.find(TsUser.class, username);
+    	// thanks to:
+    	// https://vladmihalcea.com/the-best-way-to-map-a-naturalid-business-key-with-jpa-and-hibernate/
+    	TsUser user = em.unwrap(Session.class)
+    			.bySimpleNaturalId(TsUser.class)
+    			.load(username);
     	return user;
     }
 }
