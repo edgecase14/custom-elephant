@@ -9,4 +9,21 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
+  <login-config>
+    <auth-method>SPNEGO</auth-method>
+    <realm-name>exampleApplicationDomain</realm-name>
+  </login-config>
+    <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>secure</web-resource-name>
+      <url-pattern>/Tsc/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>Admin</role-name>
+    </auth-constraint>
+  </security-constraint>
+  <security-role>
+    <description>The role that is required to log in to /secure/*</description>
+    <role-name>Admin</role-name>
+  </security-role>
 </web-app>
