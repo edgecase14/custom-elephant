@@ -15,7 +15,7 @@ export class TimeSheetCell extends HTMLElement {
     super();
     
     //console.log(":yey:");
-	this.sock = new mrSock("ws://" + location.host + "/elephWeb/Tsc/" + window.login); // need singleton - try class static fn()?
+	this.sock = new mrSock("wss://" + location.hostname + ":8443/elephWeb/Tsc/" + window.login); // need singleton - try class static fn()?
 
 	// Create a shadow root
 	this.attachShadow({mode: 'open'}); // sets and returns 'this.shadowRoot'

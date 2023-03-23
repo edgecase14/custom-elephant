@@ -28,7 +28,7 @@ let params = new URLSearchParams(queryString);
 window.login = params.get("login");
 
 
-const cellsock = new mrSock("ws://" + location.host + "/elephWeb/Tsc/" + login, {type: "cell-list", payload: { dummy: "is pharoah"} });
+const cellsock = new mrSock("wss://" + location.hostname + ":8443/elephWeb/Tsc/" + login, {type: "cell-list", payload: { dummy: "is pharoah"} });
 
 // onmessage callbacks
 function gotcells(payload) {
