@@ -2,26 +2,26 @@ package net.coplanar.eleph;
 
 import java.io.IOException;
 
-import javax.websocket.EncodeException;
-import javax.websocket.CloseReason;
-import javax.websocket.OnClose;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
-import javax.websocket.server.PathParam;
+import jakarta.websocket.EncodeException;
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.ServerEndpoint;
+import jakarta.websocket.server.PathParam;
 import java.util.List;
 import java.time.LocalDate;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonObject;
 //import javax.json.JsonArray;
-import javax.json.Json;
+import jakarta.json.Json;
 
 import net.coplanar.beanz.*;
 import net.coplanar.ents.*;
 
-import javax.ejb.EJB;
+import jakarta.ejb.EJB;
 
 /**
  * Servlet implementation class Tsc

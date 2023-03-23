@@ -1,12 +1,12 @@
 package net.coplanar.beanz;
 
-import javax.ejb.Stateful;
+import jakarta.ejb.Stateful;
 //import javax.ejb.LocalBean;
 import java.util.List;
 import java.time.LocalDate;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import net.coplanar.ents.TsCell;
 import net.coplanar.ents.TsUser;
 import net.coplanar.ents.Project;

@@ -1,6 +1,6 @@
 package net.coplanar.eleph;
 
-import javax.json.JsonObject;
+import jakarta.json.JsonObject;
 
 public class Message {
 

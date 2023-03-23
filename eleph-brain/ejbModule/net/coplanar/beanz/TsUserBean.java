@@ -1,9 +1,9 @@
 package net.coplanar.beanz;
 
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
+import jakarta.ejb.Stateless;
+import jakarta.persistence.EntityManager;
 import org.hibernate.Session;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.PersistenceContext;
 
 import net.coplanar.ents.*;
 
