@@ -15,7 +15,11 @@ import org.hibernate.annotations.NaturalId;
  *
  */
 @Entity
-
+// https://vladmihalcea.com/the-best-way-to-map-a-naturalid-business-key-with-jpa-and-hibernate/
+//@org.hibernate.annotations.Cache(
+//	    usage = CacheConcurrencyStrategy.READ_WRITE
+//	)
+//@NaturalIdCache
 public class TsUser implements Serializable {
 
 	   
