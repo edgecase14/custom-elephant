@@ -13,6 +13,9 @@ import jakarta.websocket.server.PathParam;
 import java.util.List;
 import java.time.LocalDate;
 import jakarta.json.JsonObjectBuilder;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.UserTransaction;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 //import javax.json.JsonArray;
@@ -20,7 +23,7 @@ import jakarta.json.Json;
 
 import net.coplanar.beanz.*;
 import net.coplanar.ents.*;
-
+import jakarta.annotation.Resource;
 import jakarta.ejb.EJB;
 
 /**
@@ -29,6 +32,8 @@ import jakarta.ejb.EJB;
 @ServerEndpoint(value = "/Tsc/{userid}",
     encoders= { MessageEncoder.class },
     decoders= { MessageDecoder.class }
+    // this is where to check authentication, and deny connection synchronously before onOpen or onMessage which are both async it seems
+    //configurator = WsAuth.class
 )
 public class Tsc  {
        
@@ -37,9 +42,11 @@ public class Tsc  {
 	@EJB(lookup="java:app/eleph-brain/TsUserBean!net.coplanar.beanz.TsUserBean") TsUserBean tsuser;
 	@EJB(lookup="java:app/eleph-brain/ProjectBean!net.coplanar.beanz.ProjectBean") ProjectBean project;
 	@EJB(lookup="java:app/eleph-brain/UserProjectBean!net.coplanar.beanz.UserProjectBean") UserProjectBean userProject;
-	
+	@Resource private UserTransaction utx;
+
     @OnMessage
     public void dispatch(Message message, Session session) throws IOException, EncodeException {
+    	// what happens if socket is closed when we get here?  race? check isOpen?
     	switch (message.getType()) {
     	case "cell-list":
     		this.cellList(session);
@@ -54,8 +61,15 @@ public class Tsc  {
     }
 
     private void cellList(Session session) throws IOException, EncodeException {
+    	// each bean method call is a separate transaction... but they shouldn't be!
+    	// wrapper bean vs non-CMT mode?
     	setBuffered(session);
-
+    	try {
+    		utx.begin();
+    	} catch (Exception e) {
+    		throw new IOException(e);
+    	}    	
+    	
     	List<StatDay> sds = statDay.getStatDays(LocalDate.parse("2022-06-01"), LocalDate.parse("2022-07-30"));
     	for (StatDay sd : sds) {
     		JsonObjectBuilder pbuilder = Json.createObjectBuilder();
@@ -69,8 +83,11 @@ public class Tsc  {
            push(session, pplo);
     	}
     	
-    	String id = (String) session.getUserPrincipal().getName();
-    	TsUser tsu = tsuser.getUserFromUsername(id);
+//    	String id = (String) session.getUserPrincipal().getName();
+//    	String id = "jjackson";
+    	int user_id = (int)session.getUserProperties().get("TSUSER");
+    	TsUser tsu = tsuser.getUser(user_id);
+
     	List<UserProject> prjs = tsu.getProjects();
     	for (UserProject userProj : prjs) {
     	  Project prj = userProj.getProject();
@@ -130,7 +147,11 @@ public class Tsc  {
     	push(session, tot);
 
     	sendToSession(session);
-
+    	try {
+    		utx.rollback();
+    	} catch (Exception e) {
+    		throw new IOException(e);
+    	}
     }
     
     private void cellUpdate(Session session, JsonObject obj) throws IOException, EncodeException {
@@ -144,9 +165,11 @@ public class Tsc  {
     	JsonObjectBuilder builder = Json.createObjectBuilder();
     	builder.add("id", mytscell.getId());
     		builder.add("action", "ack");
+    		// how can concurrent updates be handled?  only 1 session in "update mode" at a time?
     		tscell.updateTsCellEntry(id, Float.parseFloat(obj.getString("contents")), obj.getString("note"));
     		System.out.println("contents: " + Float.parseFloat(obj.getString("contents")));
-    		tscell.flush();
+    		// this is a bit suspicious
+    		//tscell.flush();
     	   	JsonObject cellJson = builder.build();
     	response.setPayload(cellJson);
     	
@@ -176,11 +199,33 @@ public class Tsc  {
 
     
     @OnOpen
-    public void helloOnOpen(@PathParam("userid") String id, Session session) {
+    // what prevents 2 connections to same endpoint, for 1 client (http session) ?
+    // *can* it throw anything??
+    public void helloOnOpen(@PathParam("userid") String id, Session session) throws IOException {
     	// later use "userid" to edit someone else's timesheet, if allowed eg supervisor
-    	session.getUserProperties().put("USER_ID", id);
+    	
+    	// most of this belongs in ServerEndpointConfig
+    	String upn = (String) session.getUserPrincipal().getName();
+        System.out.println("WebSocket opened for UPN: " + upn);
+        // these 2 should probably be done with an exception try block 
+        if (upn == null) {
+            CloseReason cr = new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "Authentication missing");
+            session.close(cr);
+    	}
+    	TsUser tsu = tsuser.getUserFromUsername(upn);
+    	if (tsu == null) {
+            CloseReason cr = new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "Authentication error");
+            session.close(cr);
+    	}
+
+    	String uid = tsu.getUsername();
+    	int user_id = tsu.getUser_id();
+    	session.getUserProperties().put("TSUSER", user_id);
+    	
+        // setup observers here - how to synchronize before "cell-list"
     	session.getUserProperties().put("IS_BUFFERED", 0);
-        System.out.println("WebSocket opened for UPN: " + session.getUserPrincipal().getName() + " userid: " + id);
+        System.out.println("WebSocket opened for uid: " + uid);
+
     }
 
     @OnClose
