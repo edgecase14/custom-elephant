@@ -1,7 +1,7 @@
 package net.coplanar.ents;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * Entity implementation class for Entity: UserProject

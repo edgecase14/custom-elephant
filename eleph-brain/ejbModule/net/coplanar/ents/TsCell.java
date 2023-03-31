@@ -1,7 +1,7 @@
 package net.coplanar.ents;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 
 /**

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.lang.String;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.NaturalId;
 //import org.hibernate.annotations.*;
