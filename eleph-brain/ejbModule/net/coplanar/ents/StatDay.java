@@ -2,8 +2,7 @@ package net.coplanar.ents;
 
 import java.io.Serializable;
 import java.lang.String;
-import javax.persistence.*;
-import org.hibernate.annotations.NaturalId;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 
 
@@ -18,7 +17,6 @@ public class StatDay implements Serializable {
 	@Id
 	@GeneratedValue ( strategy = GenerationType.IDENTITY )
 	private int holiday_id;
-	@NaturalId
 	@Column(nullable=false)
 	private LocalDate holiday;
 	@Column(nullable=false)
@@ -27,6 +25,13 @@ public class StatDay implements Serializable {
 
 	public StatDay() {
 		super();
+	}   
+	public int getHolidayId() {
+		return this.holiday_id;
+	}
+
+	public void setHolidayId(int id) {
+		this.holiday_id = id;
 	}   
 	public LocalDate getHolidayDate() {
 		return this.holiday;
