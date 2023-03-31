@@ -20,18 +20,57 @@ export class TimeSheetCell extends HTMLElement {
 	// Create a shadow root
 	this.attachShadow({mode: 'open'}); // sets and returns 'this.shadowRoot'
 
+	// Create some CSS to apply to the shadow dom
+//	const style = document.createElement('style');
+//	style.innerHTML = `
+
+
+	const sheet = new CSSStyleSheet
+	sheet.replaceSync( `
+* {
+	margin: .5em;
+	display: inline-block;
+	border: 1px solid #ddd;
+	font-family: arial;
+	background-color: black;
+	color: goldenrod;
+}
+
+div {
+	padding: 10px;
+	max-width: 8em;
+	text-overflow: elipsis;
+}
+
+.foobar {
+	background-color: white;
+	color: black;
+}
+
+.bloody {
+	background-color: red;
+	color: white;
+}
+
+.rolling-meadows {
+	background-color: #88ef99;
+	color: black;
+}
+.is-stat {
+	background-color: #68cf79;
+	color: black;
+`)
+	this.shadowRoot.adoptedStyleSheets = [ sheet ] 
+
+//}`;
+	//this.shadowRoot.appendChild(style);
+
 	// Create (nested) span elements
 	const wrapper = document.createElement('div');
 	//wrapper.setAttribute('id', 'entry_el');
 	wrapper.setAttribute('contenteditable','true');
 	wrapper.innerText = "0";
-
-	// Create some CSS to apply to the shadow dom
-//	const style = document.createElement('style');
-//	style.textContent = '';
-
-    // attach the created elements to the shadow DOM
-	this.shadowRoot.append(wrapper);
+	this.shadowRoot.appendChild(wrapper);
 
 	const note_el = document.createElement('div');
 	note_el.setAttribute('id', 'note_el');
@@ -40,20 +79,17 @@ export class TimeSheetCell extends HTMLElement {
 	this.shadowRoot.append(note_el);
 
 	// make this conditional on customElement Attribute, "hide_date"?
-
 	//const date_el = document.createElement('div');
 	//date_el.setAttribute('id', 'date_el');
 	//date_el.innerText = "YYYY-MM-DD";
 	//this.shadowRoot.append(date_el);
 
-
+// this was inlined above for performance reasons
 	// Apply external styles to the shadow dom
-	const linkElem = document.createElement('link');
-	linkElem.setAttribute('rel', 'stylesheet');
-	linkElem.setAttribute('href', 'tsc.css');
-
-	// Attach the created element to the shadow dom
-	this.shadowRoot.appendChild(linkElem);
+//	const linkElem = document.createElement('link');
+//	linkElem.setAttribute('rel', 'stylesheet');
+//	linkElem.setAttribute('href', 'tsc.css');
+//	this.shadowRoot.appendChild(linkElem);
 
  
     this.addEventListener("keydown", (e) => {
