@@ -39,7 +39,7 @@ export class mrSock {
 		this.sock.onopen = ono.bind(this);  // does this race with new WebSocket(url) above?
 
  		const onc = function(event) {
-			this.statusElement.innerText = this.url + " closed";
+			this.statusElement.innerText = this.url + " closed " + event.code + " reason:" + event.reason;
   		}
   		this.sock.onclose = onc.bind(this);
   		
