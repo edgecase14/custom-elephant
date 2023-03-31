@@ -13,8 +13,6 @@ import jakarta.websocket.server.PathParam;
 import java.util.List;
 import java.time.LocalDate;
 import jakarta.json.JsonObjectBuilder;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.UserTransaction;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
