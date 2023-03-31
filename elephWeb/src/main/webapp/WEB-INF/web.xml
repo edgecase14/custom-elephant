@@ -9,11 +9,17 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
+ <!--
   <login-config>
-    <auth-method>SPNEGO</auth-method>
-    <realm-name>exampleApplicationDomain</realm-name>
+    <auth-method>CLIENT_CERT,SPNEGO</auth-method>
+    <realm-name>krbCertASD</realm-name>
   </login-config>
-    <security-constraint>
+  <login-config>
+    <auth-method>CLIENT-CERT</auth-method>
+     <realm-name>ccApplicationDomain</realm-name> 
+  </login-config>
+   -->
+  <security-constraint>
     <web-resource-collection>
       <web-resource-name>secure</web-resource-name>
       <url-pattern>/Tsc/*</url-pattern>
