@@ -29,7 +29,7 @@
     </auth-constraint>
   </security-constraint>
   <security-role>
-    <description>The role that is required to log in to /secure/*</description>
+    <description>The role that is required to log in to /Tsc/*</description>
     <role-name>Admin</role-name>
   </security-role>
 </web-app>
