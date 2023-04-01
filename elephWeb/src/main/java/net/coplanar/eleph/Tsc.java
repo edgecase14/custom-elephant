@@ -29,9 +29,9 @@ import jakarta.ejb.EJB;
  */
 @ServerEndpoint(value = "/Tsc/{userid}",
     encoders= { MessageEncoder.class },
-    decoders= { MessageDecoder.class }
+    decoders= { MessageDecoder.class },
     // this is where to check authentication, and deny connection synchronously before onOpen or onMessage which are both async it seems
-    //configurator = WsAuth.class
+    configurator = WsAuth.class
 )
 public class Tsc  {
        
@@ -207,13 +207,17 @@ public class Tsc  {
         System.out.println("WebSocket opened for UPN: " + upn);
         // these 2 should probably be done with an exception try block 
         if (upn == null) {
+            System.out.println("WebSocket closed due to NULL UPN");
             CloseReason cr = new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "Authentication missing");
             session.close(cr);
+            return;
     	}
     	TsUser tsu = tsuser.getUserFromUsername(upn);
     	if (tsu == null) {
+            System.out.println("WebSocket closed: UPN lookup failure: " + upn);
             CloseReason cr = new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "Authentication error");
             session.close(cr);
+            return;
     	}
 
     	String uid = tsu.getUsername();
