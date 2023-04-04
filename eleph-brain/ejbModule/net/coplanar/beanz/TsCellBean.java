@@ -1,7 +1,6 @@
 package net.coplanar.beanz;
 
-import jakarta.ejb.Stateful;
-//import javax.ejb.LocalBean;
+import jakarta.ejb.Stateless;
 import java.util.List;
 import java.time.LocalDate;
 import jakarta.persistence.EntityManager;
@@ -11,17 +10,12 @@ import net.coplanar.ents.TsCell;
 import net.coplanar.ents.TsUser;
 import net.coplanar.ents.Project;
 
-@Stateful
+@Stateless
 public class TsCellBean {
-    // Injected database connection:
     @PersistenceContext private EntityManager em;
  
-    // Stores a new guest:
     public void persist(TsCell tscell) {
         em.persist(tscell);
-    }
-    public void flush() {
-    	em.flush();
     }
 
     public List<TsCell> getAllTsCells(TsUser tsuser, Project proj) {
@@ -60,11 +54,9 @@ public class TsCellBean {
     	return thecell;
     }
     public void updateTsCellEntry (int id, float entry, String note) {
-    	//em.getTransaction().begin();  // can't while using container managed transations
     	TsCell mytscell = getTsCell(id);
     	mytscell.setEntry(entry);
     	mytscell.setNote(note);
-    	//em.getTransaction().begin();
     	
     }
 }
