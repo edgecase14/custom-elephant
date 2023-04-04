@@ -24,6 +24,9 @@ import net.coplanar.ents.*;
 import jakarta.annotation.Resource;
 import jakarta.ejb.EJB;
 
+// TODO - rename this TimesheetController (ala MVC)
+// TODO - decouple Json building and WebSocket message boundaries ( and when asynch, priorities) in case implementation changes
+
 /**
  * Servlet implementation class Tsc
  */
@@ -44,6 +47,7 @@ public class Tsc  {
 
     @OnMessage
     public void dispatch(Message message, Session session) throws IOException, EncodeException {
+    	// what happens of we *do* throw an exception?  close socket?
     	// what happens if socket is closed when we get here?  race? check isOpen?
     	switch (message.getType()) {
     	case "cell-list":
@@ -59,8 +63,6 @@ public class Tsc  {
     }
 
     private void cellList(Session session) throws IOException, EncodeException {
-    	// each bean method call is a separate transaction... but they shouldn't be!
-    	// wrapper bean vs non-CMT mode?
     	setBuffered(session);
     	try {
     		utx.begin();
@@ -146,12 +148,13 @@ public class Tsc  {
 
     	sendToSession(session);
     	try {
-    		utx.rollback();
+    		utx.commit(); // or flush if Extended Transaction
     	} catch (Exception e) {
     		throw new IOException(e);
-    	}
+    	} 
     }
     
+	// should also be wrapped in utx?
     private void cellUpdate(Session session, JsonObject obj) throws IOException, EncodeException {
     	Message response = new Message();
     	response.setType("cell-update");
@@ -227,12 +230,14 @@ public class Tsc  {
         // setup observers here - how to synchronize before "cell-list"
     	session.getUserProperties().put("IS_BUFFERED", 0);
         System.out.println("WebSocket opened for uid: " + uid);
+        // reconnect logic - if new session, send json message, to trigger "cell-list"
 
     }
 
     @OnClose
     public void helloOnClose(CloseReason reason) {
         System.out.println("WebSocket connection closed with CloseCode: " + reason.getCloseCode());
+        // reconnect logic - if closed due to keepalive timeout, keep httpSession
     }
 
 }
