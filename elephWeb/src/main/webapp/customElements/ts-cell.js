@@ -1,4 +1,4 @@
-import { mrSock } from './mrsock.js'
+import { mrSock } from '../mrsock.js'
 
 class TimeSheetCell extends HTMLElement {
 
