@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<script>
+
+
+console.log('opening websocket'); 
+const sock = new WebSocket('wss://mjolnir.ad.coplanar.net:8443/elephWeb/SessionAdmin');
+
+
+const ono = function(event) {
+	    const msg = { type: "session-list" };
+		sock.send(JSON.stringify(msg));
+}
+	
+sock.onopen = ono;
+
+const om = function(event) {
+	console.log(event.data)
+}
+
+const cb = function(event) {
+		//console.log(event.data);
+//		const jsondata = JSON.parse(event.data);
+//		if (Array.isArray(jsondata)) {
+//			for (let amsg of jsondata) {
+//				this.dispatchOne(amsg);
+//			}
+//		} else {
+//			this.dispatchOne(jsondata);
+//		}
+
+}
+
+sock.onmessage = om;
+
+
+	
+</script>
+</body>
+</html>
