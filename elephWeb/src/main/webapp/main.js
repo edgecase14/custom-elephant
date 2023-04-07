@@ -1,4 +1,4 @@
-import { TimeSheetCell } from './tsc.js'
+import './customElements/ts-cell.js'
 import { mrSock } from './mrsock.js'
 
 const req_btn = document.querySelector("button[id='app_req']");

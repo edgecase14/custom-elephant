@@ -1,6 +1,6 @@
 import { mrSock } from './mrsock.js'
 
-export class TimeSheetCell extends HTMLElement {
+class TimeSheetCell extends HTMLElement {
 
   static handlers=[];
   
