@@ -1,5 +1,8 @@
-import './customElements/ts-cell.js'
 import { mrSock } from './mrsock.js'
+// slightly ugly way to make globally accessible to other classes
+import { TimeSheetCell} from './customElements/ts-cell.js'
+window.mrsock = new mrSock("wss://" + location.hostname + ":8443/elephWeb/Tsc/", {type: "cell-list", payload: { dummy: "is pharoah"} });
+TimeSheetCell.init(); // ugly hack - are imports hoisted or something?
 
 const req_btn = document.querySelector("button[id='app_req']");
 const req_status = document.querySelector("div[id='approve']");
@@ -25,10 +28,8 @@ const tbody = document.getElementById("mrtimesheet").getElementsByTagName('tbody
 
 let queryString = window.location.search;
 let params = new URLSearchParams(queryString);
-window.login = params.get("login");
+//window.login = params.get("login");
 
-
-const cellsock = new mrSock("wss://" + location.hostname + ":8443/elephWeb/Tsc/" + login, {type: "cell-list", payload: { dummy: "is pharoah"} });
 
 // onmessage callbacks
 function gotcells(payload) {
@@ -109,8 +110,8 @@ function showusername(payload) {
 	const un = document.getElementById("username");
 	un.innerText = payload.user;
 }
-cellsock.registerCallback("username", showusername);
-cellsock.registerCallback("cell-list", gotcells);
-cellsock.registerCallback("row-list", gotrow);
-cellsock.registerCallback("calc-update", calcUpdate);
-cellsock.registerCallback("stat-days", gotStat);
+mrsock.registerCallback("username", showusername);
+mrsock.registerCallback("cell-list", gotcells);
+mrsock.registerCallback("row-list", gotrow);
+mrsock.registerCallback("calc-update", calcUpdate);
+mrsock.registerCallback("stat-days", gotStat);

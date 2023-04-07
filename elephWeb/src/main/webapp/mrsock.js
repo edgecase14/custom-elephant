@@ -3,26 +3,18 @@
  */
 export class mrSock {
 	
-	url;
+//  url;
 	sock;
 	dispatch;
 	statusElement;
 	onOpenMsg;
-	static urls=[]; // connection cache
 	
   	constructor (url,openmsg) {
-		this.url = url; // could we just get this from WebSocket?
+//		this.url = url; // could we just get this from WebSocket?
 		this.dispatch = [];
-		// implement singleton per url
-		for (let old_url of mrSock.urls) {
-			if (url == old_url.my_url) {
-				return old_url.myself;
-			}
-		}
 		this.onOpenMsg = openmsg;
 		this.sock = new WebSocket(url);
 		//console.log(url);
-		mrSock.urls.push({ my_url: url, myself: this });
 
 		const sockStatus = document.getElementById("tsc"); // is there a way to pass this, maybe class factory?
 		// XXX skip if not present in DOM
@@ -62,8 +54,8 @@ export class mrSock {
 				//console.log(mrSock.handlers.toString());
 			    let one_matched = false;
 				for (let handler of this.dispatch) {
-					//console.log("trying handler id: " + handler.ep + " json.id" + jsondata.payload.id);
 					if (handler.type == jsondata.type) {
+						//console.log("trying handler id: " + handler.cb + " json.type " + jsondata.type);
 						handler.cb(jsondata.payload);
 						one_matched = true;
 						break;  // what if we allow multiple cb per "type"?  is it just that easy?

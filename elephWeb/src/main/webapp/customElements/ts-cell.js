@@ -1,11 +1,11 @@
 import { mrSock } from '../mrsock.js'
 
-class TimeSheetCell extends HTMLElement {
+export class TimeSheetCell extends HTMLElement {
 
   static handlers=[];
-  
-  static() {
-	// new mrSock here?
+  static init() {
+	  window.mrsock.registerCallback("cell-update", this.mymessage)
+//	  console.log('register cell-update cb')
   }
 
    // Can define constructor arguments if you wish.
@@ -14,9 +14,6 @@ class TimeSheetCell extends HTMLElement {
     // This is specific to CE and required by the spec.
     super();
     
-    //console.log(":yey:");
-	this.sock = new mrSock("wss://" + location.hostname + ":8443/elephWeb/Tsc/" + window.login); // need singleton - try class static fn()?
-
 	// Create a shadow root
 	this.attachShadow({mode: 'open'}); // sets and returns 'this.shadowRoot'
 
@@ -104,7 +101,8 @@ div {
 	      let contents = this.shadowRoot.querySelector("div").innerText;
 	      let note_str = this.shadowRoot.querySelector("div[id='note_el']").innerText;
 	      // console.log(contents);
-	      this.sock.send({ type:"cell-update", payload: {id: cell_id, contents: contents, note: note_str }});
+	      // need to add "compoment": "ts-cell" here and in Tsc.java, and maybe not use raw json here
+	      window.mrsock.send({ type:"cell-update", payload: {id: cell_id, contents: contents, note: note_str }});
 
 	  	  return false;
        }
@@ -126,7 +124,7 @@ div {
 	  }
     }
     
-    mymessage(payload) { // can javascript have static methods?
+    static mymessage(payload) {
 		for (let handler of TimeSheetCell.handlers) {
 					//console.log("trying handler id: " + handler.ep + " json.id" + jsondata.payload.id);
 					if (handler.ep == payload.id) {
@@ -142,7 +140,7 @@ div {
         // console.log("my id is : " + myid);
 		this.shadowRoot.querySelector("div").setAttribute('id', myid); // maybe some kind of introspection instead?
 	    TimeSheetCell.handlers.push({ep: myid, cb: this.ack.bind(this)});
-		this.sock.registerCallback("cell-update", this.mymessage.bind(this)); // duplicates every one XXX
+	    // move to ts-cell.js?
       } else {
 		console.log("error: ts-cell: attribute timesheet-id is required when element is attached to DOM");
 	  }
