@@ -28,6 +28,7 @@ export class mrSock {
 			this.statusElement.innerText = this.url + " open";
 			this.send(this.onOpenMsg);
   		}
+  		// can most of the instance binds go away?
 		this.sock.onopen = ono.bind(this);  // does this race with new WebSocket(url) above?
 
  		const onc = function(event) {

@@ -3,6 +3,7 @@ import { mrSock } from './mrsock.js'
 import { TimeSheetCell} from './customElements/ts-cell.js'
 window.mrsock = new mrSock("wss://" + location.hostname + ":8443/elephWeb/Tsc/", {type: "cell-list", payload: { dummy: "is pharoah"} });
 TimeSheetCell.init(); // ugly hack - are imports hoisted or something?
+// now how do we manage Websocket state machine, to sync UI?  connection lost, session timeout, reconnect to same session, etc.
 
 const req_btn = document.querySelector("button[id='app_req']");
 const req_status = document.querySelector("div[id='approve']");
@@ -26,8 +27,8 @@ for (let day = 1; day <= 16; day++) {
 	
 const tbody = document.getElementById("mrtimesheet").getElementsByTagName('tbody')[0];
 
-let queryString = window.location.search;
-let params = new URLSearchParams(queryString);
+//let queryString = window.location.search;
+//let params = new URLSearchParams(queryString);
 //window.login = params.get("login");
 
 

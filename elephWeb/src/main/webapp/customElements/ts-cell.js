@@ -1,9 +1,7 @@
-import { mrSock } from '../mrsock.js'
-
 export class TimeSheetCell extends HTMLElement {
-
   static handlers=[];
-  static init() {
+  static my_elem_name = 'ts-cell';
+  static init() {  // static block seemed to run before mrsock got imported in main.js
 	  window.mrsock.registerCallback("cell-update", this.mymessage)
 //	  console.log('register cell-update cb')
   }
@@ -57,7 +55,7 @@ div {
 	background-color: #68cf79;
 	color: black;
 `)
-	this.shadowRoot.adoptedStyleSheets = [ sheet ] 
+	this.shadowRoot.adoptedStyleSheets = [ sheet ]
 
 //}`;
 	//this.shadowRoot.appendChild(style);
@@ -114,7 +112,7 @@ div {
       //console.log("cell-update:: " + JSON.stringify(payload));
       if (payload.action == "ack") { 
        this.shadowRoot.querySelector("div").className = "rolling-meadows";
-        const myid = this.getAttribute("timesheet-id");
+        //const myid = this.getAttribute("timesheet-id");
       }
       if (payload.action == "init") {
 		this.shadowRoot.querySelector("div").innerText = payload.contents;
@@ -124,6 +122,7 @@ div {
 	  }
     }
     
+    // move to superclass
     static mymessage(payload) {
 		for (let handler of TimeSheetCell.handlers) {
 					//console.log("trying handler id: " + handler.ep + " json.id" + jsondata.payload.id);
@@ -131,14 +130,18 @@ div {
 						handler.cb(payload);
 						break; // maybe we want more than one callback?
 					}
+					// if none match, console.log()
 		}
 	}
 	
+	// move most to superclass
     connectedCallback() {
-      if (this.hasAttribute("timesheet-id")) {
+      if (this.hasAttribute("timesheet-id")) { // parameterize: $ce_type_name-id
         const myid = Number(this.getAttribute("timesheet-id"));
         // console.log("my id is : " + myid);
+        // DOM id format $ce_type_name-id-$myid
 		this.shadowRoot.querySelector("div").setAttribute('id', myid); // maybe some kind of introspection instead?
+		// like search backwards the first enclosing custom-element (or root of shadow-dom?) and this.getAttribute
 	    TimeSheetCell.handlers.push({ep: myid, cb: this.ack.bind(this)});
 	    // move to ts-cell.js?
       } else {

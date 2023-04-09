@@ -2,7 +2,6 @@ package net.coplanar.eleph;
 
 import java.util.ArrayList;
 
-import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.HandshakeResponse;
 import jakarta.websocket.server.HandshakeRequest;
