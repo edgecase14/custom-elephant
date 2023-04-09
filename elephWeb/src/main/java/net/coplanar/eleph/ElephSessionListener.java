@@ -27,7 +27,6 @@ public class ElephSessionListener implements HttpSessionListener {
     String sid = session.getId();
     System.out.println("add session id: " + sid + " UPN: " + upn);
 
-    // Add keys and values (Country, City)
     hsessions.put(sid, session);
 
   }
