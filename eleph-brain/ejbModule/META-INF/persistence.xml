@@ -2,16 +2,10 @@
 <persistence version="2.2" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
 	<persistence-unit name="eleph-brain">
 		<jta-data-source>java:/ElephDS</jta-data-source>
-		<class>net.coplanar.ents.Project</class>
-		<class>net.coplanar.ents.Rep</class>
-		<class>net.coplanar.ents.StatDay</class>
-		<class>net.coplanar.ents.TsCell</class>
-		<class>net.coplanar.ents.TsUser</class>
-		<class>net.coplanar.ents.UserProject</class>
 		<properties>
 			<property name="javax.persistence.schema-generation.create-database-schemas" value="false"/> 
-            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL95Dialect"/>
-           <property name="hibernate.hbm2ddl.auto" value="update" /> <!-- create / create-drop / update -->   
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="update" /> <!-- create / create-drop / update -->   
             <property name="hibernate.show_sql" value="false" /> <!-- Show SQL in console -->
             <property name="hibernate.format_sql" value="true" /> <!-- Show SQL formatted --> 
         </properties>
