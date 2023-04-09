@@ -10,7 +10,6 @@ import jakarta.servlet.ServletRequestEvent;
 import jakarta.servlet.ServletRequestListener;
 import jakarta.servlet.annotation.WebListener;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 
 @WebListener
 public class RequestListener implements ServletRequestListener {
@@ -26,7 +25,7 @@ public class RequestListener implements ServletRequestListener {
     	System.out.println("--MYrequestInitialized --");
     	// can we skip this if no UPN - unauthenticated?
     	// seems like an oversight in the Websocket JSR spec that I have to do this
-        HttpSession ms = ((HttpServletRequest) sre.getServletRequest()).getSession();
+        ((HttpServletRequest) sre.getServletRequest()).getSession();
     }
 
 }
