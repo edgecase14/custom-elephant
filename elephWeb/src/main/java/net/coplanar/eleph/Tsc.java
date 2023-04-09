@@ -3,20 +3,14 @@ package net.coplanar.eleph;
 import java.io.IOException;
 
 import jakarta.websocket.EncodeException;
-import jakarta.websocket.CloseReason;
-import jakarta.websocket.OnClose;
 import jakarta.websocket.OnMessage;
-import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
-import jakarta.websocket.server.PathParam;
 import java.util.List;
 import java.time.LocalDate;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.transaction.UserTransaction;
-import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
-//import javax.json.JsonArray;
 import jakarta.json.Json;
 
 import net.coplanar.beanz.*;
@@ -36,7 +30,7 @@ import jakarta.ejb.EJB;
     // this is where to check authentication, and deny connection synchronously before onOpen or onMessage which are both async it seems
     configurator = WsAuth.class
 )
-public class Tsc  {
+public class Tsc  extends Endpoint {
        
 	@EJB(lookup="java:app/eleph-brain/StatDayBean!net.coplanar.beanz.StatDayBean") StatDayBean statDay;
 	@EJB(lookup="java:app/eleph-brain/TsCellBean!net.coplanar.beanz.TsCellBean") TsCellBean tscell;
@@ -44,11 +38,17 @@ public class Tsc  {
 	@EJB(lookup="java:app/eleph-brain/ProjectBean!net.coplanar.beanz.ProjectBean") ProjectBean project;
 	@EJB(lookup="java:app/eleph-brain/UserProjectBean!net.coplanar.beanz.UserProjectBean") UserProjectBean userProject;
 	@Resource private UserTransaction utx;
-
+	
     @OnMessage
     public void dispatch(Message message, Session session) throws IOException, EncodeException {
     	// what happens of we *do* throw an exception?  close socket?
     	// what happens if socket is closed when we get here?  race? check isOpen?
+
+    	// TODO - add a "compoment" decode first, maybe with "controller" case going to existing one
+    	// how would access control be handled them?  will MVC controller "filter" before dispatching?
+    	// that could be required by either business rules ACL, or state-machine, separate filter chains
+    	// for each?
+    	// this may push DOM object/event models into Java?
     	switch (message.getType()) {
     	case "cell-list":
     		this.cellList(session);
@@ -154,6 +154,7 @@ public class Tsc  {
     	} 
     }
     
+    // try moving this to a sub-package of HTML Custom Element backends, with added "compoment": "ts-cell" to messages
 	// should also be wrapped in utx?
     private void cellUpdate(Session session, JsonObject obj) throws IOException, EncodeException {
     	Message response = new Message();
@@ -175,69 +176,6 @@ public class Tsc  {
     	response.setPayload(cellJson);
     	
     	session.getBasicRemote().sendObject(response);
-    }
-
-    private void sendToSession(Session session) throws EncodeException, IOException {
-	  int isBuffered = (int) session.getUserProperties().get("IS_BUFFERED");
-          if (isBuffered == 0) {
-        	  System.out.println("must be buffered!");
-              //session.getBasicRemote().sendObject(response);
-          } else {
-        	  JsonArrayBuilder buf = (JsonArrayBuilder) session.getUserProperties().get("JSON_OBJ");
-              session.getBasicRemote().sendText(buf.build().toString());
-          }
-    }
-
-    private void setBuffered(Session session) {
-    	session.getUserProperties().put("IS_BUFFERED", 1);
-        session.getUserProperties().put("JSON_OBJ" , Json.createArrayBuilder());
-    }
-
-    private void push(Session session, JsonObjectBuilder jso) {
-       JsonArrayBuilder buf = (JsonArrayBuilder) session.getUserProperties().get("JSON_OBJ");
-	   buf.add(jso);
-    }
-
-    
-    @OnOpen
-    // what prevents 2 connections to same endpoint, for 1 client (http session) ?
-    // *can* it throw anything??
-    public void helloOnOpen(@PathParam("userid") String id, Session session) throws IOException {
-    	// later use "userid" to edit someone else's timesheet, if allowed eg supervisor
-    	
-    	// most of this belongs in ServerEndpointConfig
-    	String upn = (String) session.getUserPrincipal().getName();
-        System.out.println("WebSocket opened for UPN: " + upn);
-        // these 2 should probably be done with an exception try block 
-        if (upn == null) {
-            System.out.println("WebSocket closed due to NULL UPN");
-            CloseReason cr = new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "Authentication missing");
-            session.close(cr);
-            return;
-    	}
-    	TsUser tsu = tsuser.getUserFromUsername(upn);
-    	if (tsu == null) {
-            System.out.println("WebSocket closed: UPN lookup failure: " + upn);
-            CloseReason cr = new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "Authentication error");
-            session.close(cr);
-            return;
-    	}
-
-    	String uid = tsu.getUsername();
-    	int user_id = tsu.getUser_id();
-    	session.getUserProperties().put("TSUSER", user_id);
-    	
-        // setup observers here - how to synchronize before "cell-list"
-    	session.getUserProperties().put("IS_BUFFERED", 0);
-        System.out.println("WebSocket opened for uid: " + uid);
-        // reconnect logic - if new session, send json message, to trigger "cell-list"
-
-    }
-
-    @OnClose
-    public void helloOnClose(CloseReason reason) {
-        System.out.println("WebSocket connection closed with CloseCode: " + reason.getCloseCode());
-        // reconnect logic - if closed due to keepalive timeout, keep httpSession
     }
 
 }
